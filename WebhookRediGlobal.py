@@ -53,5 +53,3 @@ def handle_webhook(webhook_id):
 
     # Retorna o endereço reenviado e o tópico
     return jsonify({"reenviado_para": target_url, "topico": topic}), 200 
-
-if __name__ == '__main__':
