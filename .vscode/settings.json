@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/0a6ebc6d-e389-490c-afe5-c8dd10d89d2e/resourceGroups/redirecionador-webhook-pdv_group/providers/Microsoft.Web/sites/redirecionador-webhook-pdv",
+    "appService.deploySubpath": "."
+}

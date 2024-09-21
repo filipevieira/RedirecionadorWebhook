@@ -55,4 +55,3 @@ def handle_webhook(webhook_id):
     return jsonify({"reenviado_para": target_url, "topico": topic}), 200 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
