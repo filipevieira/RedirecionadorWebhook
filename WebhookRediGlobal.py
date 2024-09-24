@@ -42,7 +42,7 @@ def handle_webhook(webhook_id):
     target_url = BASE_TARGET_URL + webhook_id
 
     try:
-        response = requests.post(target_url, json=data, timeout=360)  # Timeout de 360 segundos
+        response = requests.post(target_url, json=data, timeout=600)  # Timeout de 600 segundos (10 minutos)
         app.logger.debug(f"Resposta da requisição: {response.status_code} - {response.text}")
     except requests.Timeout:
         app.logger.error("Tempo limite excedido na requisição.")
