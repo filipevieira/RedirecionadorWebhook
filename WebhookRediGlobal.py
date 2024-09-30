@@ -2,7 +2,6 @@ import json
 import logging
 from flask import Flask, request, jsonify
 import requests
-import threading
 
 # Configuração do Logger (mesma lógica)
 class AzureJsonFormatter(logging.Formatter):
@@ -29,15 +28,6 @@ app = Flask(__name__)
 
 # URL base de destino
 BASE_TARGET_URL = "https://devi-sandbox.azurewebsites.net/api/webhooks/incoming/omie/"
-
-def send_request(target_url, data):
-    try:
-        response = requests.post(target_url, json=data, timeout=600)  # Timeout de 600 segundos (10 minutos)
-        app.logger.info(json.dumps({'message': f"Resposta da requisição: {response.status_code} - {response.text}"}))
-    except requests.Timeout:
-        app.logger.error(json.dumps({'message': "Tempo limite excedido na requisição."}))
-    except requests.RequestException as e:
-        app.logger.error(json.dumps({'message': f"Erro ao enviar requisição: {e}"}))
 
 @app.route('/api/webhooks/incoming/omie/<path:webhook_id>', methods=['POST'])
 def handle_webhook(webhook_id):
@@ -66,10 +56,17 @@ def handle_webhook(webhook_id):
     # Construção da URL de destino com o webhook_id
     target_url = BASE_TARGET_URL + webhook_id
 
-    # Inicia uma nova thread para enviar a requisição em segundo plano
-    threading.Thread(target=send_request, args=(target_url, data)).start()
+    try:
+        response = requests.post(target_url, json=data, timeout=600)  # Timeout de 600 segundos (10 minutos)
+        app.logger.debug(f"Resposta da requisição: {response.status_code} - {response.text}")
+    except requests.Timeout:
+        app.logger.error("Tempo limite excedido na requisição.")
+        return jsonify({"error": "Request timeout"}), 504
+    except requests.RequestException as e:
+        app.logger.error(f"Erro ao enviar requisição: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
-    # Retorna imediatamente com 200 OK
+    # Retorna o endereço reenviado e o tópico
     return jsonify({"reenviado_para": target_url, "topico": topic}), 200 
 
 if __name__ == '__main__':
