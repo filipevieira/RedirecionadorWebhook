@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - redirecionador-webhook-pdv
+name: Criar e implantar aplicativo Python no Azure Web App - redirecionador-webhook-pdv
 
 on:
   push:
@@ -17,25 +17,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python version
+      - name: Configurar a versão Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Create and start virtual environment
+      - name: Criar e iniciar ambiente virtual
         run: |
           python -m venv venv
           source venv/bin/activate
       
-      - name: Install dependencies
+      - name: Instalar dependências
         run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-      - name: Zip artifact for deployment
+      - name: Compactar artefato para implantação
         run: zip release.zip ./* -r
 
-      - name: Upload artifact for deployment jobs
+      - name: Carregar artefato para trabalhos de implantação
         uses: actions/upload-artifact@v4
         with:
           name: python-app
@@ -50,7 +48,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write #Isto é necessário para solicitar o JWT
 
     steps:
       - name: Download artifact from build job
@@ -58,11 +56,11 @@ jobs:
         with:
           name: python-app
 
-      - name: Unzip artifact for deployment
+      - name: Descompactar artefato para implantação
         run: unzip release.zip
 
       
-      - name: Login to Azure
+      - name: Login Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_463104B433974EDDA36E29D2DA7A1264 }}
