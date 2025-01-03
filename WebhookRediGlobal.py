@@ -34,24 +34,14 @@ def handle_webhook(webhook_id):
     app.logger.handlers[0].setFormatter(formatter)
     app.logger.info(json.dumps({'message': f"Requisição recebida em {request.url} com webhook_id: {webhook_id}"}))
 
-    try:
-        data = request.get_json()
-    except json.JSONDecodeError as e:
-        app.logger.error(json.dumps({'message': f"Erro ao decodificar JSON: {e}"}))
+    data = get_request_data()
+    if data is None:
         return jsonify({"error": "Invalid JSON data"}), 400
 
     app.logger.info(json.dumps({'message': f"Dados recebidos: {data}"}))
 
     # Define um valor padrão para 'topic'
-    topic = "Tópico não informado"  
-
-    try:
-        data = request.get_json()
-        # Agora você pode sobrescrever o valor padrão de 'topic' se ele existir no JSON
-        topic = data.get("topic", topic)  
-    except json.JSONDecodeError as e:
-        app.logger.error(json.dumps({'message': f"Erro ao decodificar JSON: {e}"}))
-        return jsonify({"error": "Invalid JSON data"}), 400
+    topic = data.get("topic", "Tópico não informado")
 
     # Construção da URL de destino com o webhook_id
     target_url = BASE_TARGET_URL + webhook_id
@@ -68,6 +58,13 @@ def handle_webhook(webhook_id):
 
     # Retorna o endereço reenviado e o tópico
     return jsonify({"reenviado_para": target_url, "topico": topic}), 200 
+
+def get_request_data():
+    try:
+        return request.get_json()
+    except json.JSONDecodeError as e:
+        app.logger.error(json.dumps({'message': f"Erro ao decodificar JSON: {e}"}))
+        return None
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
