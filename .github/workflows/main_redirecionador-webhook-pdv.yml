@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Criar e implantar aplicativo Python no Azure Web App - redirecionador-webhook-pdv
+name: Build and deploy Python app to Azure Web App - redirecionador-webhook-pdv
 
 on:
   push:
@@ -17,23 +17,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configurar a versão Python
+      - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10'
 
-      - name: Criar e iniciar ambiente virtual
+      - name: Create and start virtual environment
         run: |
           python -m venv venv
           source venv/bin/activate
       
-      - name: Instalar dependências
+      - name: Install dependencies
         run: pip install -r requirements.txt
+        
+      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-      - name: Compactar artefato para implantação
+      - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
-      - name: Carregar artefato para trabalhos de implantação
+      - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
@@ -48,7 +50,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #Isto é necessário para solicitar o JWT
+      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -56,16 +58,16 @@ jobs:
         with:
           name: python-app
 
-      - name: Descompactar artefato para implantação
+      - name: Unzip artifact for deployment
         run: unzip release.zip
 
       
-      - name: Login Azure
+      - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_463104B433974EDDA36E29D2DA7A1264 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DCDF8EBD47264F99BD1343A9CD2F3361 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_856E4734C5F842C891F2EDD9C65252ED }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9CC5A018106442FBA0EFCE7A6C9AD74D }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E1E5C436AAC846DF9A495C93CD1BB7FD }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EEFE2771A0204351830C7CF5CE195682 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
