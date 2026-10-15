@@ -1,4 +1,4 @@
-from WebhookRediGlobal import app  # Importe sua aplicação Flask
+from WebhookRediGlobal import app, run_server
 
 if __name__ == "__main__":
-    app.run(port=8000)  # Inicia a aplicação Flask (não necessário em produção)
+    run_server()
