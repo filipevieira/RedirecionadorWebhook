@@ -17,11 +17,27 @@ Este projeto é um redirecionador de webhooks desenvolvido em Python utilizando 
     ```sh
     pip install flask requests
     ```
-4. Execute o aplicativo:
+4. Para desenvolvimento local, execute o aplicativo com o servidor Flask sem debug:
     ```sh
     python WebhookRediGlobal.py
     ```
-5. O servidor estará disponível em `http://0.0.0.0:5000`.
+5. O servidor estará disponível em `http://127.0.0.1:5000`.
+
+Para habilitar o debugger interativo, isso deve ser feito apenas localmente e de forma explícita:
+
+```sh
+set APP_ENV=development
+set FLASK_DEBUG=true
+python WebhookRediGlobal.py
+```
+
+Em produção, use um servidor WSGI e mantenha o debug desabilitado:
+
+```sh
+gunicorn --bind 0.0.0.0:%PORT% WebhookRediGlobal:app
+```
+
+O Flask não inicia o debugger quando `APP_ENV` não é `development`, mesmo que `FLASK_DEBUG` esteja definido.
 
 ## 🔧 Configuração
 
